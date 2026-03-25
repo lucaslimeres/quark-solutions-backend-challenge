@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  PAID_ADS
+  ORGANIC
+  OTHER
+}
+
+enum ProcessStatus {
+  SUCCESS
+  FAILED
+}
+
+model Lead {
+  id              String   @id @default(uuid())
+  fullName        String
+  email           String   @unique
+  phone           String
+  companyName     String
+  companyCnpj     String   @unique
+  companyWebsite  String?
+  estimatedValue  Float?
+  source          LeadSource
+  notes           String?  @db.VarChar(500)
+  
+  // Relacionamentos para Histórico (Requisito 6.5)
+  enrichments     EnrichmentHistory[]
+  classifications ClassificationHistory[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("leads")
+}
+
+model EnrichmentHistory {
+  id             String        @id @default(uuid())
+  leadId         String
+  lead           Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  payload        Json?
+  status         ProcessStatus
+  errorMessage   String?       @db.Text
+  
+  requestedAt    DateTime      @default(now())
+  completedAt    DateTime?
+
+  @@map("enrichment_history")
+}
+
+model ClassificationHistory {
+  id                String        @id @default(uuid())
+  leadId            String
+  lead              Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  score             Int
+  classification    String
+  justification     String        @db.Text
+  commercialPotential String
+  modelUsed         String
+  
+  status            ProcessStatus
+  errorMessage      String?       @db.Text
+  
+  requestedAt       DateTime      @default(now())
+  completedAt       DateTime?
+
+  @@map("classification_history")
+}
