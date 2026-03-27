@@ -5,7 +5,6 @@ import 'dotenv/config';
 import { LeadModel } from 'generated/prisma/models';
 import { firstValueFrom } from 'rxjs';
 import { OllamaService } from './ollama.service';
-import { ProcessStatus } from 'generated/prisma/enums';
 
 @Injectable()
 export class ConsumersService {  
