@@ -1,14 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { CreateLeadDto } from './dto/create-lead.dto';
-import { UpdateLeadsDto } from './dto/udpate-lead.dto';
-import { LeadsService, EnrichmentService, ClassificationService} from './services';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { LeadsService, EnrichmentService, ClassificationService, ExportService} from './services';
+import { CreateLeadDto, ExportFilterDto, UpdateLeadsDto } from './dto';
 
 @Controller('api/v1/leads')
 export class LeadsController {
   constructor(
     private readonly leadsService: LeadsService,
     private readonly enrichmentService: EnrichmentService,
-    private readonly classificationService: ClassificationService
+    private readonly classificationService: ClassificationService,
+    private readonly exportService: ExportService
   ) {}
   
   @Post()
@@ -64,7 +64,7 @@ export class LeadsController {
   }
 
   @Get(':id/export')
-  async export(@Param('id') id: string) {
-    return { route: `/api/v1/leads/${id}/export`, method: 'GET', id };
+  async export(@Param('id') id: string, @Query() filters: ExportFilterDto) {
+    return await this.exportService.exportLeads(id, filters);
   }
 }
