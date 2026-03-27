@@ -13,8 +13,15 @@ export class EnrichmentService {
       options: {
         urls: [`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`],
         queue: 'lead_queue',
+        queueOptions: {
+          durable: true,
+        },
       }
     });
+  }
+
+  async onModuleInit() {
+    await this.clientEnrichmentLead.connect();
   }
 
   async enrichLead(id: string) {
@@ -26,7 +33,11 @@ export class EnrichmentService {
       throw new HttpException('Lead not found', HttpStatus.NOT_FOUND);
     }
 
-    return this.clientEnrichmentLead.emit('enrich_lead', { lead });
+    try {
+      return this.clientEnrichmentLead.emit('enrich_lead', { lead });
+    } catch (error) {
+      throw new HttpException('Erro ao enviar para fila', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async listEnrichs(id: string) {
