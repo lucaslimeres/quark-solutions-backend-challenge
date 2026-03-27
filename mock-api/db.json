@@ -1,0 +1,52 @@
+{
+  "enrichLead": {
+    "companyName": "Tech Corp",
+    "tradeName": "Tech Corp Soluções",
+    "cnpj": "12345678000199",
+    "industry": "SaaS",
+    "legalNature": "Sociedade Empresária Limitada",
+    "employeeCount": 120,
+    "annualRevenue": 1500000,
+    "foundedAt": "2015-03-10",
+    "address": {
+      "street": "Rua das Inovações",
+      "number": "500",
+      "complement": "Sala 42",
+      "neighborhood": "Centro",
+      "city": "São Paulo",
+      "state": "SP",
+      "zipCode": "01001-000",
+      "country": "BR"
+    },
+    "cnaes": [
+      { "code": "6201-5/00", "description": "Desenvolvimento de programas de computador sob encomenda", "isPrimary": true },
+      { "code": "6202-3/00", "description": "Desenvolvimento e licenciamento de programas de computador customizáveis", "isPrimary": false }
+    ],
+    "partners": [
+      {
+        "name": "Ana Souza",
+        "cpf": "***.456.789-**",
+        "role": "Sócia Administradora",
+        "joinedAt": "2015-03-10",
+        "phone": "+55 11 99999-1111",
+        "email": "ana.souza@techcorp.com"
+      },
+      {
+        "name": "Carlos Lima",
+        "cpf": "***.654.321-**",
+        "role": "Sócio",
+        "joinedAt": "2018-07-22",
+        "phone": "+55 11 98888-2222",
+        "email": "carlos.lima@techcorp.com"
+      }
+    ],
+    "phones": [
+      { "type": "commercial", "number": "+55 11 3000-1234" },
+      { "type": "mobile", "number": "+55 11 99999-5678" }
+    ],
+    "emails": [
+      { "type": "commercial", "address": "contato@techcorp.com" },
+      { "type": "financial", "address": "financeiro@techcorp.com" }
+    ]
+  }
+}

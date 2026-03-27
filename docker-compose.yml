@@ -38,5 +38,14 @@ services:
     entrypoint: /bin/sh
     command: -c "ollama serve & sleep 5 && ollama pull tinyllama && tail -f /dev/null"
 
+  mock-api:
+    image: clue/json-server
+    container_name: quark_mock_api
+    ports:
+      - "3333:80"
+    volumes:
+      - ./mock-api/db.json:/data/db.json
+    restart: always
+
 volumes:
   ollama_data:
