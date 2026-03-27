@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateLeadDto } from './dto/create-lead.dto';
+import { CreateLeadDto } from '../dto/create-lead.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
