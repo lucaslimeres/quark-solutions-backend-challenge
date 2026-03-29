@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateLeadDto } from '../dto/create-lead.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
@@ -6,13 +6,33 @@ import { PrismaService } from 'src/database/prisma.service';
 export class LeadsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  logger = new Logger(LeadsService.name);
+
   async create(createLeadDto: CreateLeadDto) {
-    return await this.prisma.lead.create({
-      data: {
-        id: crypto.randomUUID(),
-        ...createLeadDto,
-      }
+    const lead = await this.prisma.lead.findFirst({
+      where: {
+        OR: [
+          { email: createLeadDto.email },
+          { companyCnpj: createLeadDto.companyCnpj }
+        ]
+      },
     });
+
+    if (lead) {
+      throw new HttpException('Lead already exists with this email or company CNPJ', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      return await this.prisma.lead.create({
+        data: {
+          id: crypto.randomUUID(),
+          ...createLeadDto,
+        }
+      });
+    } catch (error) {
+      this.logger.error('Error creating lead', error);
+      throw new HttpException('Error creating lead', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findAll() {
@@ -40,10 +60,15 @@ export class LeadsService {
       throw new HttpException('Lead not found', HttpStatus.NOT_FOUND);
     }
 
-    return await this.prisma.lead.update({
-      where: { id },
-      data: updateLeadDto
-    });
+    try {
+      return await this.prisma.lead.update({
+        where: { id },
+        data: updateLeadDto
+      })
+    } catch(error) {
+      this.logger.error('Error updating lead', error);
+      throw new HttpException('Error updating lead', HttpStatus.INTERNAL_SERVER_ERROR);
+    };
   }
 
   async remove(id: string) {

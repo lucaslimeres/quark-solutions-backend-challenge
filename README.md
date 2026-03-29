@@ -1,98 +1,159 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 💎 Quark Solutions - Lead Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Desafio técnico de Backend focado no gerenciamento, enriquecimento e classificação de leads comerciais para o setor de investimentos, utilizando NestJS, RabbitMQ e IA Local (Ollama).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Como Executar o Projeto
 
-## Description
+### **1. Pré-requisitos**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+* Docker e Docker Compose instalados.
 
-## Project setup
+* Node.js (v20 ou superior).
 
-```bash
-$ npm install
-```
+### **2. Instalação e Configuração**
 
-## Compile and run the project
+#### Clone o repositório
 
-```bash
-# development
-$ npm run start
+````
+git clone https://github.com/lucaslimeres/quark-solutions-backend-challenge.git
+````
 
-# watch mode
-$ npm run start:dev
+````
+cd quark-solutions-backend-challenge
+````
 
-# production mode
-$ npm run start:prod
-```
+#### Instale as dependências
 
-## Run tests
+````
+npm install
+````
 
-```bash
-# unit tests
-$ npm run test
+#### Configure o ambiente
 
-# e2e tests
-$ npm run test:e2e
+````
+cp .env.example .env
+````
 
-# test coverage
-$ npm run test:cov
-```
+### **3. Subir Infraestrutura (Docker)**
 
-## Deployment
+Este comando inicia o PostgreSQL, RabbitMQ, a API de Mock e o Ollama.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Nota: No primeiro arranque, o contentor do Ollama fará o download automático do modelo tinyllama (~637MB). Aguarde alguns instantes até que o serviço esteja pronto.
+````
+docker-compose up -d
+````
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### **4. Preparar a Base de Dados**
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+#### Executa as migrations do Prisma
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+````
+npx prisma migrate dev
+````
 
-## Resources
+#### Popula a base de dados com dados iniciais (Seeds)
 
-Check out a few resources that may come in handy when working with NestJS:
+````
+npx prisma db seed
+````
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### **5. Execução**
 
-## Support
+#### Iniciar a API e o Consumer (Modo Desenvolvimento)
+````
+npm run start:dev
+````
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🛠 Comandos Principais
 
-## Stay in touch
+| Objetivo                      | Comando                         |
+|-------------------------------|---------------------------------|
+| Subir Infra (Docker)          | ``docker-compose up -d``        |
+| Executar Testes Unitários     | ``npm run test``                |
+| Executar Testes de Integração | ``npm run test:e2e``            |
+| Cobertura de Código           | ``npm run test:cov``            |
+| Interface da Base de Dados    | ``npx prisma studio``           |
+| Logs do Worker (IA)           | ``docker logs -f quark_ollama`` |
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 📊 Modelação de Dados
 
-## License
+A arquitetura de dados foi desenhada para suportar a Regra 6.5 (Histórico), garantindo que cada tentativa de processamento seja auditável de forma independente, permitindo o rastreio da evolução do lead.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+erDiagram
+    LEAD ||--o{ ENRICHMENT_HISTORY : "possui"
+    LEAD ||--o{ CLASSIFICATION_HISTORY : "possui"
+
+    LEAD {
+        string id PK
+        string fullName
+        string email UK
+        string phone
+        string companyCnpj UK
+        float estimatedValue
+        enum source
+    }
+
+    ENRICHMENT_HISTORY {
+        string id PK
+        string leadId FK
+        json payload
+        enum status
+        string errorMessage
+        datetime requestedAt
+        datetime completedAt
+    }
+
+    CLASSIFICATION_HISTORY {
+        string id PK
+        string leadId FK
+        int score
+        string classification
+        string justification
+        string modelUsed
+        enum status
+        datetime requestedAt
+        datetime completedAt
+    }
+
+
+🧠 Decisões Técnicas e Trade-offs
+
+1. Arquitetura Baseada em Eventos (Event-Driven)
+
+Decisão: Utilização do RabbitMQ para desacoplar a ingestão de leads do processamento pesado (IA e APIs externas).
+
+Trade-off: Introduz latência eventual (o lead não  é classificado no exato segundo do POST), mas garante que a API suporte alta carga e que falhas externas não causem perda de dados.
+
+2. IA Local com Ollama (TinyLlama)
+
+Decisão: Uso do tinyllama rodando localmente em contentor.
+
+Trade-off: Embora menos potente que modelos como GPT-4, oferece custo zero por requisição, privacidade total dos dados sensíveis da Quark Solutions e baixíssima latência por não depender de rede externa.
+
+3. Estratégia de Resiliência (Retry Pattern)
+
+Decisão: Implementação de Manual Ack no RabbitMQ com controlo de x-death.
+
+Trade-off: Aumenta a complexidade do código do Consumer, mas permite que o sistema tente processar o lead novamente caso o contentor da IA esteja sobrecarregado ou a API de Mock sofra instabilidade.
+
+4. Persistência de Histórico Imutável
+
+Decisão: Criação de tabelas de histórico separadas em vez de colunas na tabela de Leads.
+
+Trade-off: Consome mais espaço em disco no longo prazo, porém permite auditar a evolução do score do lead e rastrear falhas técnicas de forma granular (exigência do teste).
+
+5. Testes com Vitest
+
+Decisão: Migração do Jest para o Vitest.
+
+Trade-off: Oferece execução de testes significativamente mais rápida e integração nativa com ESM/SWC, melhorando a produtividade do desenvolvedor.
+
+📮 API Endpoints (Exemplos)
+
+POST /leads: Criação de novo lead.
+
+GET /leads/export: Exportação consolidada com filtros de classificação e período.
+
+GET /leads/:id: Detalhes do lead com histórico completo de auditoria de enriquecimento e classificação.
+
+Desenvolvido por Lucas Limeres.

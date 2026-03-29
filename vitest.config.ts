@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import swc from 'unplugin-swc';
+import tsconfigPaths from 'vite-tsconfig-paths'; // Adicione este import
 
 export default defineConfig({
   test: {
@@ -8,7 +9,7 @@ export default defineConfig({
     environment: 'node',
   },
   plugins: [
-    // Necessário para o NestJS entender os Decorators com SWC
+    tsconfigPaths(), // Adicione o plugin aqui
     swc.vite({
       module: { type: 'es6' },
     }),

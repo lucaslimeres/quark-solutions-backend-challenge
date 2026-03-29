@@ -3,19 +3,23 @@ import { LeadsController } from './leads.controller';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LeadSource } from "generated/prisma/enums";
 import { ClassificationService, EnrichmentService, ExportService, LeadsService } from './services';
-import { v4 as uuvidv4 } from 'uuid';
+import { CreateLeadDto, ExportFilterDto, UpdateLeadsDto } from './dto';
 
 describe('LeadsController', () => {
-  let controller: LeadsController;
-  let leadsService: LeadsService;
-  let enrichmentService: EnrichmentService;
-  let classificationService: ClassificationService;
-  let exportService: ExportService;
+  let leadController: LeadsController;
+
+  const leadId = crypto.randomUUID();
 
   const mockLeadsService = {
     create: vi.fn(),
     findAll: vi.fn(),
     findOne: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+    enrich: vi.fn(),
+    listEnrichs: vi.fn(),
+    classify: vi.fn(),
+    listClassifications: vi.fn(),
     exportLeads: vi.fn(),
   };
 
@@ -33,7 +37,7 @@ describe('LeadsController', () => {
     listClassifications: vi.fn(),
   };
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [LeadsController],
       providers: [
@@ -44,42 +48,106 @@ describe('LeadsController', () => {
       ],
     }).compile();
 
-    controller = module.get<LeadsController>(LeadsController);
-    leadsService = module.get<LeadsService>(LeadsService);
-    enrichmentService = module.get<EnrichmentService>(EnrichmentService);
-    classificationService = module.get<ClassificationService>(ClassificationService);
-    exportService = module.get<ExportService>(ExportService);
+    leadController = module.get<LeadsController>(LeadsController);
   });
 
-  describe('create', () => {
-    it('should be able to create a lead', async () => {
-      const dto = {
-        fullName: 'Ricardo Souza',
-        email: 'ricardo@quark.com.br',
-        phone: '+5511999991111',
-        companyName: 'Quark',
-        companyCnpj: '12345678000199',
-        source: LeadSource.OTHER,
-      } as any;
-
-      mockLeadsService.create.mockResolvedValue({ id: '1', ...dto });
-
-      const result = await controller.create(dto);
-
-      expect(leadsService.create).toHaveBeenCalledWith(dto);
-      expect(result).toHaveProperty('id');
-    }); 
+  beforeEach(async () => {
+    vi.resetAllMocks();
   });
 
-  describe('export', () => {
-    it('should be able to export leads', async () => {
-      const filters = { classification: 'Hot' } as any;
-      const leadId = uuvidv4();
-      mockExportService.exportLeads.mockResolvedValue([]);
+  it('should be defined', () => {
+    expect(leadController).toBeDefined();
+  });
 
-      await controller.export(leadId, filters);
+  it('should be able to create a lead', async () => {
+    const leadDto: CreateLeadDto = {
+      fullName: 'Ricardo Souza',
+      email: 'ricardo@quark.com.br',
+      phone: '+5511999991111',
+      companyName: 'Quark',
+      companyCnpj: '12345678000199',
+      source: LeadSource.OTHER,
+    };
 
-      expect(exportService.exportLeads).toHaveBeenCalledWith(filters);
-    });
+    await leadController.create(leadDto);
+
+    expect(mockLeadsService.create).toHaveBeenCalledTimes(1);
+    expect(mockLeadsService.create).toHaveBeenCalledWith(leadDto);
+  }); 
+
+  it('should be able to list all leads', async () => {
+    await leadController.findAll();
+
+    expect(mockLeadsService.findAll).toHaveBeenCalledTimes(1);
+    expect(mockLeadsService.findAll).toHaveBeenCalledWith();
+  });
+
+  it('should be able to find one lead', async () => {
+    await leadController.findOne(leadId);
+
+    expect(mockLeadsService.findOne).toHaveBeenCalledTimes(1);
+    expect(mockLeadsService.findOne).toHaveBeenCalledWith(leadId);
+  });
+
+  it('should be able to update a lead', async () => {
+    const updateLeadDto: UpdateLeadsDto = {
+      fullName: 'Ricardo Souza',
+      phone: '+5511999991111',
+      companyName: 'Quark',
+      source: LeadSource.OTHER,
+    };
+
+    await leadController.update(leadId, updateLeadDto);
+
+    expect(mockLeadsService.update).toHaveBeenCalledTimes(1);
+    expect(mockLeadsService.update).toHaveBeenCalledWith(leadId, updateLeadDto);
+  });
+
+  it('should be able to delete a lead', async () => {
+    await leadController.remove(leadId);
+
+    expect(mockLeadsService.remove).toHaveBeenCalledTimes(1);
+    expect(mockLeadsService.remove).toHaveBeenCalledWith(leadId);
+  });
+
+  it('should be able to enrich a lead', async () => {
+    await leadController.enrich(leadId);
+
+    expect(mockEnrichmentService.enrichLead).toHaveBeenCalledTimes(1);
+    expect(mockEnrichmentService.enrichLead).toHaveBeenCalledWith(leadId);
+  });
+
+  it('should be able to list enrichments of a lead', async () => {
+    await leadController.listEnrichs(leadId);
+
+    expect(mockEnrichmentService.listEnrichs).toHaveBeenCalledTimes(1);
+    expect(mockEnrichmentService.listEnrichs).toHaveBeenCalledWith(leadId);
+  });
+
+  it('should be able to classify a lead', async () => {
+    await leadController.classify(leadId);
+
+    expect(mockClassificationService.classifyLead).toHaveBeenCalledTimes(1);
+    expect(mockClassificationService.classifyLead).toHaveBeenCalledWith(leadId);
+  });
+
+  it('should be able to list classifications of a lead', async () => {
+    await leadController.listClassifications(leadId);
+
+    expect(mockClassificationService.listClassifications).toHaveBeenCalledTimes(1);
+    expect(mockClassificationService.listClassifications).toHaveBeenCalledWith(leadId);
+  });
+
+  it('should be able to export a lead', async () => {
+    const filters: ExportFilterDto = { 
+      classification: 'Hot',
+      startDate: new Date('2026-03-01').toDateString(),
+      endDate: new Date('2026-03-31').toDateString(),
+    };
+
+    await leadController.export(leadId, filters);
+
+    expect(mockExportService.exportLeads).toHaveBeenCalledTimes(1);
+    expect(mockExportService.exportLeads).toHaveBeenCalledWith(leadId, filters);  
   });
 });
