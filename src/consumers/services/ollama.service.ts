@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Ollama } from 'ollama';
-import 'dotenv/config';
+import { ENVS } from 'src/utils/enviroments';
 
 @Injectable()
 export class OllamaService {
@@ -8,11 +8,11 @@ export class OllamaService {
   private ollama: Ollama;
 
   constructor() {
-    this.ollama = new Ollama({ host: process.env.OLLAMA_URL });
+    this.ollama = new Ollama({ host: ENVS.OLLAMA.URL });
   }
 
   async classifyLead(leadData: any) {
-    const modelUsed = process.env.OLLAMA_MODEL || 'tinyllama';
+    const modelUsed = ENVS.OLLAMA.MODEL || 'tinyllama';
     const requestedAt = new Date();
 
     const prompt = `

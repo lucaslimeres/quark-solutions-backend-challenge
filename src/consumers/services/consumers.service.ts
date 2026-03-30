@@ -1,10 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import 'dotenv/config';
 import { LeadModel } from 'generated/prisma/models';
 import { firstValueFrom } from 'rxjs';
 import { OllamaService } from './ollama.service';
+import { ENVS } from 'src/utils/enviroments';
 
 @Injectable()
 export class ConsumersService {  
@@ -16,12 +16,12 @@ export class ConsumersService {
 
     logger = new Logger(ConsumersService.name); 
 
-async enrichLead(lead: LeadModel) {
+  async enrichLead(lead: LeadModel) {
     const requestedAt = new Date();
     
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${process.env.API_MOCK_URL}?companyCnpj=${lead.companyCnpj}`)
+        this.httpService.get(`${ENVS.API.MOCK_URL}?companyCnpj=${lead.companyCnpj}`)
       );
       
       return await this.prisma.enrichmentHistory.create({

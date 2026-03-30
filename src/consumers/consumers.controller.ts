@@ -2,14 +2,14 @@ import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
 import { ConsumersService } from './services';
 import { LeadModel } from 'generated/prisma/models';
-import 'dotenv/config';
+import { ENVS } from 'src/utils/enviroments';
 
 @Controller('consumers')
 export class ConsumersController {
   constructor(private readonly consumersService: ConsumersService) {}
 
   logger = new Logger(ConsumersController.name);
-  maxRetries = parseInt(process.env.RABBITMQ_MAX_RETRIES || '5');
+  maxRetries = ENVS.RABBITMQ.MAX_RETRIES;
 
   @MessagePattern('enrich_lead')
   async enrichLead(@Payload() data: { lead: LeadModel }, @Ctx() context: RmqContext) {

@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ClientProxy, ClientProxyFactory, Transport } from "@nestjs/microservices";
 import { PrismaService } from "src/database/prisma.service";
-import 'dotenv/config';
+import { ENVS } from "src/utils/enviroments";
 
 @Injectable()
 export class EnrichmentService {
@@ -11,8 +11,8 @@ export class EnrichmentService {
     this.clientEnrichmentLead = ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: [`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`],
-        queue: 'lead_queue',
+        urls: [`amqp://${ENVS.RABBITMQ.USER}:${ENVS.RABBITMQ.PASSWORD}@${ENVS.RABBITMQ.HOST}:${ENVS.RABBITMQ.PORT}`],
+        queue: ENVS.RABBITMQ.QUEUE,
         queueOptions: {
           durable: true,
         },
