@@ -77,11 +77,12 @@ npm run start:dev
 
 ## 📊 Modelação de Dados
 
-A arquitetura de dados foi desenhada para suportar a Regra 6.5 (Histórico), garantindo que cada tentativa de processamento seja auditável de forma independente, permitindo o rastreio da evolução do lead.
+A arquitetura de dados foi desenhada para garantir que cada tentativa de processamento seja auditável de forma independente, permitindo o rastreio da evolução do lead.
 
+````
 erDiagram
-    LEAD ||--o{ ENRICHMENT_HISTORY : "possui"
-    LEAD ||--o{ CLASSIFICATION_HISTORY : "possui"
+    LEAD ||--o ENRICHMENT_HISTORY : "possui"
+    LEAD ||--o CLASSIFICATION_HISTORY : "possui"
 
     LEAD {
         string id PK
@@ -114,46 +115,28 @@ erDiagram
         datetime requestedAt
         datetime completedAt
     }
+````
 
+## 📮 API Endpoints (Exemplos)
 
-🧠 Decisões Técnicas e Trade-offs
+``POST /leads``: Criação de novo lead.
 
-1. Arquitetura Baseada em Eventos (Event-Driven)
+``GET /leads``: Listagem de todos os leads existentes.
 
-Decisão: Utilização do RabbitMQ para desacoplar a ingestão de leads do processamento pesado (IA e APIs externas).
+``GET /leads/:id``: Detalhes do lead.
 
-Trade-off: Introduz latência eventual (o lead não  é classificado no exato segundo do POST), mas garante que a API suporte alta carga e que falhas externas não causem perda de dados.
+``PATCH /leads/:id``: Atualização do lead.
 
-2. IA Local com Ollama (TinyLlama)
+``DELETE /leads/:id``: Exclusão do lead.
 
-Decisão: Uso do tinyllama rodando localmente em contentor.
+``GET /leads/:id/enrichment``: Listagem do histórico de enriquecimento do Lead.
 
-Trade-off: Embora menos potente que modelos como GPT-4, oferece custo zero por requisição, privacidade total dos dados sensíveis da Quark Solutions e baixíssima latência por não depender de rede externa.
+``POST /leads/:id/enrichment``: Enriquecimento do Lead através de API externa.
 
-3. Estratégia de Resiliência (Retry Pattern)
+``GET /leads/:id/classification``: Listagem do histórico de classificação do Lead.
 
-Decisão: Implementação de Manual Ack no RabbitMQ com controlo de x-death.
+``POST /leads/:id/classification``: Classificação do Lead através de IA.
 
-Trade-off: Aumenta a complexidade do código do Consumer, mas permite que o sistema tente processar o lead novamente caso o contentor da IA esteja sobrecarregado ou a API de Mock sofra instabilidade.
-
-4. Persistência de Histórico Imutável
-
-Decisão: Criação de tabelas de histórico separadas em vez de colunas na tabela de Leads.
-
-Trade-off: Consome mais espaço em disco no longo prazo, porém permite auditar a evolução do score do lead e rastrear falhas técnicas de forma granular (exigência do teste).
-
-5. Testes com Vitest
-
-Decisão: Migração do Jest para o Vitest.
-
-Trade-off: Oferece execução de testes significativamente mais rápida e integração nativa com ESM/SWC, melhorando a produtividade do desenvolvedor.
-
-📮 API Endpoints (Exemplos)
-
-POST /leads: Criação de novo lead.
-
-GET /leads/export: Exportação consolidada com filtros de classificação e período.
-
-GET /leads/:id: Detalhes do lead com histórico completo de auditoria de enriquecimento e classificação.
+``GET /leads/:id/export``: Exportação consolidada com filtros de classificação e período.
 
 Desenvolvido por Lucas Limeres.
